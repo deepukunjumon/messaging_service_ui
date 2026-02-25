@@ -4,44 +4,55 @@ import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
 const MainLayout = () => {
-  const [desktopOpen, setDesktopOpen] = useState(true);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(false);
+  const [hovering, setHovering] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
   const location = useLocation();
 
-  // Close drawer whenever route changes
+  const isMobile = window.innerWidth < 768;
+  const isExpanded = hovering || !desktopCollapsed;
+
+  // Close mobile drawer on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
 
   // Close on ESC
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
+    const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMobileOpen(false);
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
   const toggleSidebar = () => {
-    // Mobile: open overlay drawer
-    if (window.innerWidth < 768) {
+    if (isMobile) {
       setMobileOpen((v) => !v);
-      return;
+    } else {
+      setDesktopCollapsed((v) => !v);
     }
-    // Desktop: collapse rail
-    setDesktopOpen((v) => !v);
   };
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-slate-900 transition-colors">
       {/* Desktop Sidebar */}
-      <div className="hidden md:block">
-        <Sidebar open={desktopOpen} variant="desktop" />
+      <div className="hidden md:block h-full">
+        <div
+          className="h-full transition-all duration-300 ease-in-out"
+          onMouseEnter={() => setHovering(true)}
+          onMouseLeave={() => setHovering(false)}
+        >
+          <Sidebar open={isExpanded} variant="desktop" />
+        </div>
       </div>
 
       {/* Mobile Drawer */}
       <div
-        className={`md:hidden fixed inset-0 z-50 ${mobileOpen ? "" : "pointer-events-none"}`}
+        className={`md:hidden fixed inset-0 z-50 ${
+          mobileOpen ? "" : "pointer-events-none"
+        }`}
       >
         {/* Backdrop */}
         <div
@@ -51,7 +62,7 @@ const MainLayout = () => {
           }`}
         />
 
-        {/* Panel */}
+        {/* Drawer Panel */}
         <div
           className={`absolute left-0 top-0 h-full w-72 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700
           transform transition-transform duration-300 ${

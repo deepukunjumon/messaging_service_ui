@@ -19,10 +19,6 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
         >
           <Menu className="h-5 w-5 text-gray-700 dark:text-gray-200" />
         </button>
-
-        <span className="font-medium text-gray-800 dark:text-gray-100">
-          Messaging Dashboard
-        </span>
       </div>
 
       {/* Right */}
@@ -34,16 +30,10 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
         {dark ? (
           <>
             <Sun className="h-4 w-4 text-gray-700 dark:text-gray-200" />
-            <span className="text-sm text-gray-700 dark:text-gray-200 hidden sm:inline">
-              Light
-            </span>
           </>
         ) : (
           <>
             <Moon className="h-4 w-4 text-gray-700 dark:text-gray-200" />
-            <span className="text-sm text-gray-700 dark:text-gray-200 hidden sm:inline">
-              Dark
-            </span>
           </>
         )}
       </button>

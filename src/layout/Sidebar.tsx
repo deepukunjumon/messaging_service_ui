@@ -1,5 +1,9 @@
-import { NavLink } from "react-router-dom";
-import { MessageSquareText } from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
+import { sidebarConfig } from "../config/sidebar.config";
+import { useState, useEffect } from "react";
+import CompanyLogo from "../assets/company-logo.svg";
+import CompanyMark from "../assets/company-mark.svg";
 
 interface SidebarProps {
   open: boolean;
@@ -8,75 +12,114 @@ interface SidebarProps {
 
 const Sidebar = ({ open, variant }: SidebarProps) => {
   const isDesktop = variant === "desktop";
+  const location = useLocation();
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  useEffect(() => {
+    sidebarConfig.forEach((item) => {
+      if (item.children?.some((child) => child.path === location.pathname)) {
+        setExpanded(item.label);
+      }
+    });
+  }, [location.pathname]);
+
+  const toggleGroup = (label: string) => {
+    setExpanded((prev) => (prev === label ? null : label));
+  };
 
   return (
     <aside
       className={[
-        "h-full shrink-0",
+        "h-full min-h-screen shrink-0",
         "bg-white dark:bg-slate-800",
         "border-r border-gray-200 dark:border-slate-700",
         "transition-all duration-300 ease-in-out",
-        isDesktop ? (open ? "w-64" : "w-14") : "w-72",
+        isDesktop ? (open ? "w-64" : "w-16") : "w-72",
       ].join(" ")}
     >
-      {/* Header */}
+      {/* Header with Company Logo */}
       <div
-        className={[
-          "h-14 flex items-center",
-          "border-b border-gray-200 dark:border-slate-700",
-          isDesktop ? (open ? "px-4" : "px-0 justify-center") : "px-4",
-        ].join(" ")}
+        className={`h-14 flex items-center justify-center
+        }`}
       >
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-brand/15 text-brand flex items-center justify-center font-bold">
-            M
-          </div>
-
-          <span
-            className={[
-              "text-sm font-semibold text-gray-800 dark:text-gray-100 transition-all duration-300",
-              isDesktop && !open
-                ? "opacity-0 w-0 overflow-hidden"
-                : "opacity-100",
-            ].join(" ")}
-          >
-            Messaging
-          </span>
-        </div>
+        {open ? (
+          <img
+            src={CompanyLogo}
+            alt="Company Logo"
+            className="h-8 w-auto object-contain"
+          />
+        ) : (
+          <img
+            src={CompanyMark}
+            alt="Company"
+            className="h-8 w-8 object-contain"
+          />
+        )}
       </div>
 
-      {/* Nav */}
       <nav className="p-2 space-y-1">
-        <NavLink
-          to="/sms/send"
-          className={({ isActive }) =>
-            [
-              "group relative flex items-center rounded-md h-10 text-sm transition-all duration-200",
-              isDesktop ? (open ? "px-3" : "px-0 justify-center") : "px-3",
-              isActive
-                ? "bg-brand/10 text-brand dark:bg-brand/20"
-                : "text-gray-700 dark:text-gray-200 hover:bg-brand/10 dark:hover:bg-brand/20",
-            ].join(" ")
-          }
-        >
-          <MessageSquareText className="h-5 w-5" />
-          <span
-            className={[
-              "ml-3 whitespace-nowrap transition-all duration-300",
-              isDesktop && !open
-                ? "opacity-0 w-0 overflow-hidden"
-                : "opacity-100",
-            ].join(" ")}
-          >
-            Send SMS
-          </span>
+        {sidebarConfig.map((item) => {
+          const Icon = item.icon;
+          const hasChildren = !!item.children;
+          const isOpen = expanded === item.label;
 
-          {isDesktop && !open && (
-            <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition">
-              Send SMS
-            </span>
-          )}
-        </NavLink>
+          return (
+            <div key={item.label}>
+              {/* Parent */}
+              <button
+                onClick={() => hasChildren && toggleGroup(item.label)}
+                className={`w-full flex items-center justify-between ${
+                  open ? "px-3" : "justify-center"
+                } h-10 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:bg-brand/10 transition`}
+              >
+                <div className="flex items-center gap-3">
+                  {Icon && <Icon className="h-4 w-4" />}
+                  {open && <span>{item.label}</span>}
+                </div>
+
+                {hasChildren && open && (
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                )}
+              </button>
+
+              {/* Children */}
+              {hasChildren && open && (
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${
+                    isOpen ? "max-h-60 mt-1" : "max-h-0"
+                  }`}
+                >
+                  <div className="pl-8 space-y-1">
+                    {item.children!.map((child) => {
+                      const ChildIcon = child.icon;
+
+                      return (
+                        <NavLink
+                          key={child.path}
+                          to={child.path!}
+                          className={({ isActive }) =>
+                            `flex items-center gap-2 px-3 py-2 rounded-md text-sm transition ${
+                              isActive
+                                ? "bg-brand/10 text-brand"
+                                : "text-gray-600 dark:text-gray-300 hover:bg-brand/10"
+                            }`
+                          }
+                        >
+                          {ChildIcon && <ChildIcon className="h-4 w-4" />}
+                          {child.label}
+                        </NavLink>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </nav>
     </aside>
   );
