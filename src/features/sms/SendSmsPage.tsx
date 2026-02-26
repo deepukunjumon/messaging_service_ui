@@ -1,4 +1,3 @@
-// src/pages/sms/SendSmsPage.tsx
 import { useMemo, useState } from "react";
 import { sendSms } from "../../services/sms.service";
 

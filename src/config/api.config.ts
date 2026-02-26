@@ -5,6 +5,10 @@ const API = {
 
   MAIL: {
     SEND: "/mail/send"
+  },
+
+  OUTGOING_MESSAGES: {
+    LIST: "/outgoing-messages"
   }
 };
 

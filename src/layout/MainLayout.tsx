@@ -78,7 +78,7 @@ const MainLayout = () => {
         <Navbar toggleSidebar={toggleSidebar} />
 
         <main className="flex-1 overflow-auto bg-gray-50 dark:bg-slate-900 transition-colors">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 text-slate-900 dark:text-slate-100">
+          <div className="mx-auto px-4 sm:px-6 py-6 text-slate-900 dark:text-slate-100">
             <Outlet />
           </div>
         </main>
