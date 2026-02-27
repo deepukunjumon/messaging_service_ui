@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { Loader } from "./Loader";
 
 export interface Column<T> {
   key: keyof T;
@@ -52,8 +53,8 @@ export function DataTable<T extends Record<string, any>>({
         style={{ maxHeight }}
       >
         {isLoading && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-[1px]">
-            <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-0 z-50 bg-white/40 dark:bg-slate-900/40 backdrop-blur-[1px]">
+            <Loader variant="section" text="Syncing Data" />
           </div>
         )}
 
