@@ -3,6 +3,7 @@ import MainLayout from "../layout/MainLayout";
 import Dashboard from "../features/dashboard/Dashboard";
 import SendSmsPage from "../features/sms/SendSmsPage";
 import OutgoingMessagesPage from "../features/outgoingmessage/pages/OutgoingMessagesPage";
+import NotFound from "../features/error/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +21,8 @@ export const router = createBrowserRouter([
       {
         path: "logs",
         element: <OutgoingMessagesPage />,
-      }
+      },
     ],
   },
+  { path: "*", element: <NotFound /> },
 ]);
