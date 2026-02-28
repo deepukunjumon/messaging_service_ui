@@ -1,4 +1,4 @@
-import { MessageSquareText, Home, Mail, Code2 } from "lucide-react";
+import { MessageSquareText, Home, Mail, Code2, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface SidebarItem {
@@ -13,6 +13,11 @@ export const sidebarConfig: SidebarItem[] = [
     label: "Dashboard",
     path: "/",
     icon: Home,
+  },
+  {
+    label: "API Clients",
+    icon: Users,
+    path: "/api-clients",
   },
   {
     label: "SMS",

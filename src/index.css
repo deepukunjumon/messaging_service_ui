@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-primary: #09637E;
+  --bg-main: #fdfdfd;
+}
+
+[data-theme='dark'] {
+  --bg-main: #0e1822;
+}

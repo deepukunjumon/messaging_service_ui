@@ -3,19 +3,16 @@ import axios from "../../../services/axios";
 import API from "../../../config/api.config";
 
 import { DataTable } from "../../../components/DataTable";
-import type { OutgoingMessage } from "../types/outgoingMessages.types";
-import { outgoingMessageColumns } from "../config/outgoingMessages.columns";
+import { apiClientColumns } from "../config/apiClients.columns";
+import type { APIClient } from "../type/apiClients.types";
 import { Loader } from "../../../components/Loader";
 import { theme } from "../../../styles/theme";
 
-const CHANNELS = ["all", "sms", "email", "whatsapp"] as const;
-
-const OutgoingMessagesPage = () => {
-  /* ---------------- THEME DETECTION (Same as APIClientsPage) ---------------- */
+const APIClientsPage = () => {
+  // Theme state detection
   const [isDark, setIsDark] = useState(
     document.documentElement.classList.contains("dark"),
   );
-
   useEffect(() => {
     const observer = new MutationObserver(() =>
       setIsDark(document.documentElement.classList.contains("dark")),
@@ -38,78 +35,57 @@ const OutgoingMessagesPage = () => {
       : theme.brand.background.light,
   };
 
-  /* ---------------- STATE ---------------- */
-  const [messages, setMessages] = useState<OutgoingMessage[]>([]);
+  const [clients, setClients] = useState<APIClient[]>([]);
   const [loading, setLoading] = useState(false);
-
   const [search, setSearch] = useState("");
-  const [channel, setChannel] = useState<(typeof CHANNELS)[number]>("all");
-  const [clientId, setClientId] = useState("");
-
   const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
-  const [total, setTotal] = useState(0);
 
-  /* ---------------- FETCH ---------------- */
-  const fetchMessages = async () => {
+  const fetchClients = async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
         limit: String(limit),
         offset: String(offset),
+        ...(search && { q: search }),
       });
-
-      if (search) params.append("q", search);
-      if (channel !== "all") params.append("channel", channel);
-      if (clientId) params.append("client_id", clientId);
-
       const res = await axios.get(
-        `${API.OUTGOING_MESSAGES.LIST}?${params.toString()}`,
+        `${API.API_CLIENTS.LIST}?${params.toString()}`,
       );
-
-      setMessages(res.data?.data || []);
-      setTotal(res.data?.total || 0);
-    } catch (error) {
-      console.error("Fetch failed:", error);
-      setMessages([]);
-      setTotal(0);
+      setClients(res.data?.data || []);
+    } catch (e) {
+      console.error("Fetch failed:", e);
+      setClients([]);
     } finally {
       setLoading(false);
     }
   };
 
-  /* ---------------- EFFECT ---------------- */
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      setOffset(0);
-      fetchMessages();
-    }, 300);
-
+    const delayDebounceFn = setTimeout(() => fetchClients(), 300);
     return () => clearTimeout(delayDebounceFn);
-  }, [search, channel, clientId, limit, offset]);
+  }, [search, limit, offset]);
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* Page Header - Matches SendSmsPage structure */}
       <div>
         <h1
           className="text-2xl font-bold tracking-tight"
-          style={{ color: colors.primary }}
+          style={{ color: isDark ? colors.text : colors.primary }}
         >
-          Outgoing Messages
+          API Clients
         </h1>
         <p className="mt-1 text-sm" style={{ color: colors.muted }}>
-          View and monitor all outgoing messages sent via the messaging API.
+          Manage registered clients and their respective API authentication keys
+          within the secure vault.
         </p>
       </div>
 
-      {/* Main Card */}
+      {/* Main Card - Matches SendSmsPage structure */}
       <div
         className="rounded-2xl border shadow-sm overflow-hidden"
-        style={{
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-        }}
+        style={{ backgroundColor: colors.surface, borderColor: colors.border }}
       >
         {/* Card Header */}
         <div
@@ -121,26 +97,27 @@ const OutgoingMessagesPage = () => {
               className="text-sm font-semibold"
               style={{ color: colors.text }}
             >
-              Message Logs
+              Client List
             </h2>
             <p className="mt-0.5 text-xs" style={{ color: colors.primary }}>
-              All outbound communications across SMS, Email, and WhatsApp.
+              Active authentication keys and client configurations.
             </p>
           </div>
 
-          {/* Search */}
+          {/* Search Box inside Header */}
           <div className="w-full sm:w-72">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search recipient, subject or content..."
+              placeholder="Search by client name..."
               className="w-full rounded-lg border px-4 py-2 text-sm transition-all outline-none focus:ring-2"
               style={
                 {
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
                   color: colors.text,
+                  // Applying the dynamic ring color variable used in your SendSms inputs
                   "--tw-ring-color": `${colors.primary}66`,
                 } as any
               }
@@ -148,39 +125,11 @@ const OutgoingMessagesPage = () => {
           </div>
         </div>
 
-        {/* Channel Tabs */}
-        <div className="px-5 pt-4">
-          <div
-            className="inline-flex rounded-xl border p-1 text-xs font-bold"
-            style={{
-              borderColor: colors.border,
-              backgroundColor: colors.background,
-              color: colors.muted,
-            }}
-          >
-            {CHANNELS.map((c) => (
-              <button
-                key={c}
-                onClick={() => setChannel(c)}
-                className={`px-3 py-1 rounded-lg transition-all duration-200 tracking-tight ${
-                  channel === c ? "text-white" : ""
-                }`}
-                style={{
-                  backgroundColor:
-                    channel === c ? colors.primary : "transparent",
-                }}
-              >
-                {c.charAt(0).toUpperCase() + c.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Card Body */}
-        <div className="relative mt-4">
+        {/* Card Body - Containing DataTable */}
+        <div className="relative">
           {loading && (
             <div
-              className="absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm"
+              className="absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm transition-all"
               style={{
                 backgroundColor: isDark
                   ? "rgba(11, 18, 25, 0.7)"
@@ -197,10 +146,9 @@ const OutgoingMessagesPage = () => {
             </div>
           )}
 
-          <DataTable<OutgoingMessage>
-            columns={outgoingMessageColumns}
-            data={messages}
-            total={total}
+          <DataTable<APIClient>
+            columns={apiClientColumns}
+            data={clients}
             pageSize={limit}
           />
         </div>
@@ -209,4 +157,4 @@ const OutgoingMessagesPage = () => {
   );
 };
 
-export default OutgoingMessagesPage;
+export default APIClientsPage;

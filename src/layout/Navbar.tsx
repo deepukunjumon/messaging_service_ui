@@ -1,5 +1,6 @@
 import { useTheme } from "../context/ThemeContext";
 import { Menu, Moon, Sun } from "lucide-react";
+import { theme } from "../styles/theme";
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -8,33 +9,54 @@ interface NavbarProps {
 const Navbar = ({ toggleSidebar }: NavbarProps) => {
   const { dark, toggleTheme } = useTheme();
 
+  const bgColor = dark
+    ? theme.brand.background.dark
+    : theme.brand.background.DEFAULT;
+  const borderColor = dark ? "#334155" : "#e6ebf1";
+  const iconColor = dark ? theme.brand.text.dark : theme.brand.text.DEFAULT;
+  const hoverBg = dark ? "#1e293b33" : "#e2f3f5";
+
   return (
-    <header className="h-14 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center px-4 sm:px-6 justify-between transition-colors">
-      {/* Left */}
+    <header
+      className="h-14 flex items-center px-4 sm:px-6 justify-between transition-colors"
+      style={{
+        backgroundColor: bgColor,
+        borderBottom: `1px solid ${borderColor}`,
+      }}
+    >
+      {/* Left: Sidebar Toggle */}
       <div className="flex items-center gap-3">
         <button
           aria-label="Toggle sidebar"
           onClick={toggleSidebar}
-          className="h-9 w-9 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center justify-center transition"
+          className="h-9 w-9 rounded-md flex items-center justify-center transition"
+          style={{ backgroundColor: "transparent" }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = hoverBg)
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = "transparent")
+          }
         >
-          <Menu className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+          <Menu className="h-5 w-5" style={{ color: iconColor }} />
         </button>
       </div>
 
-      {/* Right */}
+      {/* Right: Theme Toggle */}
       <button
         aria-label="Toggle theme"
         onClick={toggleTheme}
-        className="h-9 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2 transition"
+        className="h-9 px-3 rounded-md flex items-center gap-2 transition"
+        style={{ backgroundColor: "transparent" }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = hoverBg)}
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.backgroundColor = "transparent")
+        }
       >
         {dark ? (
-          <>
-            <Sun className="h-4 w-4 text-gray-700 dark:text-gray-200" />
-          </>
+          <Sun className="h-4 w-4" style={{ color: iconColor }} />
         ) : (
-          <>
-            <Moon className="h-4 w-4 text-gray-700 dark:text-gray-200" />
-          </>
+          <Moon className="h-4 w-4" style={{ color: iconColor }} />
         )}
       </button>
     </header>

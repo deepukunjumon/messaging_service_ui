@@ -1,4 +1,9 @@
 const API = {
+
+  API_CLIENTS: {
+    LIST: "/api-clients",
+  },
+
   SMS: {
     SEND: "/sms/send",
   },

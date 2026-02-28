@@ -31,7 +31,6 @@ const Sidebar = ({ open, variant }: SidebarProps) => {
     <aside
       className={[
         "h-full min-h-screen shrink-0",
-        "bg-white dark:bg-slate-800",
         "border-r border-gray-200 dark:border-slate-700",
         "transition-all duration-300 ease-in-out",
         isDesktop ? (open ? "w-64" : "w-16") : "w-72",
