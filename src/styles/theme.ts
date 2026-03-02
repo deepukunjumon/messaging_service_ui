@@ -27,6 +27,19 @@ const border = {
   dark: "#1E293B",
 };
 
+const button = {
+  success: "#439121",
+  delete: "#ad1c17"
+};
+
+const toast = {
+  success: "#246b0f",
+  error: "#c71423",
+  warning: "#e6510b",
+  info: "#1792ad",
+  default: primary.DEFAULT
+};
+
 export const theme = {
   brand: {
     primary,
@@ -34,6 +47,8 @@ export const theme = {
     background,
     surface,
     text,
+    button,
+    toast,
     border,
 
     header: {

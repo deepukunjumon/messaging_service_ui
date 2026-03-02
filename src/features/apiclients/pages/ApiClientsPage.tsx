@@ -7,6 +7,8 @@ import { apiClientColumns } from "../config/apiClients.columns";
 import type { APIClient } from "../type/apiClients.types";
 import { Loader } from "../../../components/Loader";
 import { theme } from "../../../styles/theme";
+import { CreateClientModal } from "../components/CreateClientModal";
+import { Plus } from "lucide-react";
 
 const APIClientsPage = () => {
   // Theme state detection
@@ -40,7 +42,7 @@ const APIClientsPage = () => {
   const [search, setSearch] = useState("");
   const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
-
+  const [openCreate, setOpenCreate] = useState(false);
   const fetchClients = async () => {
     setLoading(true);
     try {
@@ -69,17 +71,32 @@ const APIClientsPage = () => {
   return (
     <div className="space-y-6">
       {/* Page Header - Matches SendSmsPage structure */}
-      <div>
-        <h1
-          className="text-2xl font-bold tracking-tight"
-          style={{ color: isDark ? colors.text : colors.primary }}
-        >
-          API Clients
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: colors.muted }}>
-          Manage registered clients and their respective API authentication keys
-          within the secure vault.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        {/* Left Section */}
+        <div>
+          <h1
+            className="text-2xl font-bold tracking-tight"
+            style={{ color: isDark ? colors.text : colors.primary }}
+          >
+            API Clients
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: colors.muted }}>
+            Manage registered clients and their respective API authentication keys
+            within the secure vault.
+          </p>
+        </div>
+
+        {/* Right Section */}
+        <div className="flex items-start sm:items-center">
+          <button
+            onClick={() => setOpenCreate(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+            style={{ backgroundColor: colors.primary }}
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create</span>
+          </button>
+        </div>
       </div>
 
       <div
@@ -148,6 +165,11 @@ const APIClientsPage = () => {
             pageSize={limit}
           />
         </div>
+        <CreateClientModal
+          open={openCreate}
+          onClose={() => setOpenCreate(false)}
+          onSuccess={fetchClients}
+        />
       </div>
     </div>
   );

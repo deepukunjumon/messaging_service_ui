@@ -1,6 +1,7 @@
 const API = {
 
   API_CLIENTS: {
+    CREATE: "/api-client",
     LIST: "/api-clients",
   },
 
