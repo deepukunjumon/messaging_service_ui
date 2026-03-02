@@ -10,54 +10,84 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
   const { dark, toggleTheme } = useTheme();
 
   const bgColor = dark
-    ? theme.brand.background.dark
-    : theme.brand.background.DEFAULT;
-  const borderColor = dark ? "#334155" : "#e6ebf1";
-  const iconColor = dark ? theme.brand.text.dark : theme.brand.text.DEFAULT;
-  const hoverBg = dark ? "#1e293b33" : "#e2f3f5";
+    ? theme.brand.header.dark
+    : theme.brand.header.light;
+
+  const borderColor = dark
+    ? theme.brand.border.dark
+    : theme.brand.border.light;
+
+  const iconColor = dark
+    ? theme.brand.text.dark
+    : theme.brand.text.primary;
+
+  const hoverBg =
+    theme.brand.primary.DEFAULT + (dark ? "26" : "14");
 
   return (
     <header
-      className="h-14 flex items-center px-4 sm:px-6 justify-between transition-colors"
+      className="h-14 flex items-center justify-between px-4 sm:px-6 border-b transition-colors duration-300"
       style={{
         backgroundColor: bgColor,
-        borderBottom: `1px solid ${borderColor}`,
+        borderColor,
       }}
     >
-      {/* Left: Sidebar Toggle */}
-      <div className="flex items-center gap-3">
-        <button
-          aria-label="Toggle sidebar"
-          onClick={toggleSidebar}
-          className="h-9 w-9 rounded-md flex items-center justify-center transition"
-          style={{ backgroundColor: "transparent" }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = hoverBg)
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.backgroundColor = "transparent")
-          }
-        >
-          <Menu className="h-5 w-5" style={{ color: iconColor }} />
-        </button>
-      </div>
-
-      {/* Right: Theme Toggle */}
+      {/* Sidebar Toggle */}
       <button
-        aria-label="Toggle theme"
-        onClick={toggleTheme}
-        className="h-9 px-3 rounded-md flex items-center gap-2 transition"
-        style={{ backgroundColor: "transparent" }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = hoverBg)}
+        aria-label="Toggle sidebar"
+        onClick={toggleSidebar}
+        className="group h-9 w-9 rounded-md flex items-center justify-center transition-all duration-200 active:scale-95"
+        style={{
+          backgroundColor: "transparent",
+        }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.backgroundColor = hoverBg)
+        }
         onMouseLeave={(e) =>
           (e.currentTarget.style.backgroundColor = "transparent")
         }
       >
-        {dark ? (
-          <Sun className="h-4 w-4" style={{ color: iconColor }} />
-        ) : (
-          <Moon className="h-4 w-4" style={{ color: iconColor }} />
-        )}
+        <Menu
+          className="h-5 w-5 transition-transform duration-300 group-hover:scale-110"
+          style={{ color: iconColor }}
+        />
+      </button>
+
+      {/* Theme Toggle */}
+      <button
+        aria-label="Toggle theme"
+        onClick={toggleTheme}
+        className="group h-9 px-3 rounded-md flex items-center gap-2 transition-all duration-200 active:scale-95"
+        style={{
+          backgroundColor: "transparent",
+        }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.backgroundColor = hoverBg)
+        }
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.backgroundColor = "transparent")
+        }
+      >
+        <span className="relative h-4 w-4">
+          <Sun
+            className={[
+              "absolute inset-0 h-4 w-4 transition-all duration-300",
+              dark
+                ? "opacity-100 rotate-0 scale-100"
+                : "opacity-0 -rotate-90 scale-75",
+            ].join(" ")}
+            style={{ color: iconColor }}
+          />
+          <Moon
+            className={[
+              "absolute inset-0 h-4 w-4 transition-all duration-300",
+              dark
+                ? "opacity-0 rotate-90 scale-75"
+                : "opacity-100 rotate-0 scale-100",
+            ].join(" ")}
+            style={{ color: iconColor }}
+          />
+        </span>
       </button>
     </header>
   );

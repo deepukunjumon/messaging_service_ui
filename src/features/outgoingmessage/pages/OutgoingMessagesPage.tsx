@@ -118,14 +118,11 @@ const OutgoingMessagesPage = () => {
         >
           <div>
             <h2
-              className="text-sm font-semibold"
+              className="text-m font-bold"
               style={{ color: colors.text }}
             >
               Message Logs
             </h2>
-            <p className="mt-0.5 text-xs" style={{ color: colors.primary }}>
-              All outbound communications across SMS, Email, and WhatsApp.
-            </p>
           </div>
 
           {/* Search */}

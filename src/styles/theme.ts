@@ -1,39 +1,44 @@
 const primary = {
-  DEFAULT: "#09637E", // Deep Teal
-  light: "#088395",
-  dark: "#074d61", // Darkened for hover states
+  DEFAULT: "#1597BB",
+  light: "#1597BB",
+  dark: "#1597BB",
+};
+
+const secondary = `${primary.DEFAULT}2F`;
+
+const background = {
+  light: "#F8FAFC",
+  dark: "#000000",
+};
+
+const surface = {
+  light: "#FFFFFF",
+  dark: "#000000",
+};
+
+const text = {
+  primary: "#0F172A",
+  dark: "#F1F5F9",
+  muted: "#64748B",
+};
+
+const border = {
+  light: "#E2E8F0",
+  dark: "#1E293B",
 };
 
 export const theme = {
   brand: {
     primary,
-    // Using B3 for ~70% opacity and 1A for ~10%
-    secondary: `${primary.DEFAULT}B3`,
-
-    background: {
-      light: "#F8FAFC", // Slightly off-white reduces eye strain
-      dark: "#0B1219", // Deepest layer
-    },
-
-    surface: {
-      light: "#FFFFFF", // Cards sit on top of background
-      dark: "#15202B", // Lighter than background to show elevation
-    },
-
-    text: {
-      primary: "#0F172A", // Slate 900 for Light Mode
-      dark: "#F1F5F9", // Slate 100 for Dark Mode (Readable!)
-      muted: "#64748B",
-    },
-
-    border: {
-      light: "#E2E8F0",
-      dark: "#1E293B",
-    },
+    secondary,
+    background,
+    surface,
+    text,
+    border,
 
     header: {
-      light: "#FFFFFF",
-      dark: "#0F1724",
+      light: surface.light,
+      dark: surface.dark,
     },
   },
 };

@@ -9,7 +9,7 @@ const API = {
   },
 
   MAIL: {
-    SEND: "/mail/send"
+    SEND: "/email/send"
   },
 
   OUTGOING_MESSAGES: {

@@ -54,8 +54,8 @@ const MainLayout = () => {
       style={{
         backgroundColor: darkMode
           ? theme.brand.background.dark
-          : theme.brand.background.DEFAULT,
-        color: darkMode ? theme.brand.text.dark : theme.brand.text.DEFAULT,
+          : theme.brand.background.light,
+        color: darkMode ? theme.brand.text.dark : theme.brand.text.primary,
       }}
     >
       {/* Desktop Sidebar */}
@@ -110,8 +110,8 @@ const MainLayout = () => {
           style={{
             backgroundColor: darkMode
               ? theme.brand.background.dark
-              : theme.brand.background.DEFAULT,
-            color: darkMode ? theme.brand.text.dark : theme.brand.text.DEFAULT,
+              : theme.brand.background.light,
+            color: darkMode ? theme.brand.text.dark : theme.brand.text.primary,
           }}
         >
           <div className="mx-auto px-4 sm:px-6 py-6">

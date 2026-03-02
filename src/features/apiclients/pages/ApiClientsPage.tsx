@@ -82,7 +82,6 @@ const APIClientsPage = () => {
         </p>
       </div>
 
-      {/* Main Card - Matches SendSmsPage structure */}
       <div
         className="rounded-2xl border shadow-sm overflow-hidden"
         style={{ backgroundColor: colors.surface, borderColor: colors.border }}
@@ -94,14 +93,11 @@ const APIClientsPage = () => {
         >
           <div>
             <h2
-              className="text-sm font-semibold"
+              className="text-m font-bold"
               style={{ color: colors.text }}
             >
               Client List
             </h2>
-            <p className="mt-0.5 text-xs" style={{ color: colors.primary }}>
-              Active authentication keys and client configurations.
-            </p>
           </div>
 
           {/* Search Box inside Header */}
