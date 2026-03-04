@@ -9,12 +9,13 @@ import { Loader } from "../../../components/Loader";
 import { theme } from "../../../styles/theme";
 import { CreateClientModal } from "../components/CreateClientModal";
 import { Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const APIClientsPage = () => {
-  // Theme state detection
   const [isDark, setIsDark] = useState(
     document.documentElement.classList.contains("dark"),
   );
+
   useEffect(() => {
     const observer = new MutationObserver(() =>
       setIsDark(document.documentElement.classList.contains("dark")),
@@ -37,23 +38,37 @@ const APIClientsPage = () => {
       : theme.brand.background.light,
   };
 
+  const navigate = useNavigate();
+
+  const handleEdit = (row: APIClient) => {
+    console.log("Edit:", row);
+  };
+
+  const handleDelete = (row: APIClient) => {
+    console.log("Delete:", row);
+  };
+
   const [clients, setClients] = useState<APIClient[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
   const [openCreate, setOpenCreate] = useState(false);
+
   const fetchClients = async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
         limit: String(limit),
         offset: String(offset),
-        ...(search && { q: search }),
       });
+
+      if (search) params.append("q", search);
+
       const res = await axios.get(
-        `${API.API_CLIENTS.LIST}?${params.toString()}`,
+        `${API.API_CLIENTS.LIST}?${params.toString()}`
       );
+
       setClients(res.data?.data || []);
     } catch (e) {
       console.error("Fetch failed:", e);
@@ -70,9 +85,8 @@ const APIClientsPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header - Matches SendSmsPage structure */}
+      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        {/* Left Section */}
         <div>
           <h1
             className="text-2xl font-bold tracking-tight"
@@ -86,7 +100,6 @@ const APIClientsPage = () => {
           </p>
         </div>
 
-        {/* Right Section */}
         <div className="flex items-start sm:items-center">
           <button
             onClick={() => setOpenCreate(true)}
@@ -99,25 +112,20 @@ const APIClientsPage = () => {
         </div>
       </div>
 
+      {/* Table Card */}
       <div
         className="rounded-2xl border shadow-sm overflow-hidden"
         style={{ backgroundColor: colors.surface, borderColor: colors.border }}
       >
-        {/* Card Header */}
+        {/* Search */}
         <div
           className="flex flex-col gap-3 border-b px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
           style={{ borderColor: colors.border }}
         >
-          <div>
-            <h2
-              className="text-m font-bold"
-              style={{ color: colors.text }}
-            >
-              Client List
-            </h2>
-          </div>
+          <h2 className="text-m font-bold" style={{ color: colors.text }}>
+            Client List
+          </h2>
 
-          {/* Search Box inside Header */}
           <div className="w-full sm:w-72">
             <input
               type="text"
@@ -130,7 +138,6 @@ const APIClientsPage = () => {
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
                   color: colors.text,
-                  // Applying the dynamic ring color variable used in your SendSms inputs
                   "--tw-ring-color": `${colors.primary}66`,
                 } as any
               }
@@ -138,11 +145,11 @@ const APIClientsPage = () => {
           </div>
         </div>
 
-        {/* Card Body - Containing DataTable */}
+        {/* Table Body */}
         <div className="relative">
           {loading && (
             <div
-              className="absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm transition-all"
+              className="absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm"
               style={{
                 backgroundColor: isDark
                   ? "rgba(11, 18, 25, 0.7)"
@@ -160,17 +167,22 @@ const APIClientsPage = () => {
           )}
 
           <DataTable<APIClient>
-            columns={apiClientColumns}
+            columns={apiClientColumns(handleEdit, handleDelete)}
             data={clients}
             pageSize={limit}
+            showSerialNumber
+            onRowClick={(row) =>
+              navigate(`/api-clients/${row.id}/keys`)
+            }
           />
         </div>
-        <CreateClientModal
-          open={openCreate}
-          onClose={() => setOpenCreate(false)}
-          onSuccess={fetchClients}
-        />
       </div>
+
+      <CreateClientModal
+        open={openCreate}
+        onClose={() => setOpenCreate(false)}
+        onSuccess={fetchClients}
+      />
     </div>
   );
 };

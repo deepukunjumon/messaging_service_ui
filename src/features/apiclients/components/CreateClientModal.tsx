@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "../../../services/axios";
-import API from "../../../config/api.config";
 import { Modal } from "../../../components/Modal";
 import { theme } from "../../../styles/theme";
 import { useToast } from "../../../hooks/useToast";
+import { createApiClient } from "../../../services/apiclients.service";
 
 interface Props {
   open: boolean;
@@ -16,7 +15,6 @@ export const CreateClientModal = ({ open, onClose, onSuccess }: Props) => {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔥 theme detection
   const [isDark, setIsDark] = useState(
     document.documentElement.classList.contains("dark"),
   );
@@ -64,12 +62,12 @@ export const CreateClientModal = ({ open, onClose, onSuccess }: Props) => {
     try {
       setLoading(true);
   
-      await axios.post(API.API_CLIENTS.CREATE, {
+      const res = await createApiClient({
         clientName,
         description,
       });
-  
-      showToast("Client created successfully", "success");
+
+      showToast(res.data?.data?.message || "Client created successfully", "success");
   
       resetForm();
       onSuccess();
@@ -166,7 +164,6 @@ export const CreateClientModal = ({ open, onClose, onSuccess }: Props) => {
         </div>
       </Modal>
   
-      {/* 🔥 Toast Renderer */}
       <ToastRenderer />
     </>
   );

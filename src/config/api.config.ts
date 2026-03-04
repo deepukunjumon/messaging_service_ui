@@ -5,6 +5,11 @@ const API = {
     LIST: "/api-clients",
   },
 
+  API_KEYS: {
+    GENERATE: "/api-keys/generate/{clientId}",
+    UPDATE_STATUS: "/api-keys/{apiKeyId}/status"
+  },
+
   SMS: {
     SEND: "/sms/send",
   },

@@ -6,6 +6,7 @@ import OutgoingMessagesPage from "../features/outgoingmessage/pages/OutgoingMess
 import NotFound from "../features/error/NotFound";
 import SendMailPage from "../features/email/SendMailPage";
 import APIClientsPage from "../features/apiclients/pages/ApiClientsPage";
+import APIClientKeysPage from "../features/apiclients/pages/ApiClientKeysPage";
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
       {
         path: "api-clients",
         element: <APIClientsPage />,
+      },
+      {
+        path: "api-clients/:clientId/keys",
+        element: <APIClientKeysPage />,
       },
       {
         path: "sms/send",

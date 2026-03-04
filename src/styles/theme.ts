@@ -32,6 +32,12 @@ const button = {
   delete: "#ad1c17"
 };
 
+const toggle = {
+  turned_on: "#06923E",
+  turned_off: "#d1d5db"
+
+};
+
 const toast = {
   success: "#246b0f",
   error: "#c71423",
@@ -48,6 +54,7 @@ export const theme = {
     surface,
     text,
     button,
+    toggle,
     toast,
     border,
 

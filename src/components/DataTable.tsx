@@ -14,17 +14,18 @@ interface DataTableProps<T> {
   columns: Column<T>[];
   data: T[];
 
-  /* Server side support */
   total?: number;
   page?: number;
   pageSize?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   onSearch?: (value: string) => void;
+  onRowClick?: (row: T) => void;
 
-  /* UI */
   maxHeight?: string;
   isLoading?: boolean;
+
+  showSerialNumber?: boolean;
 }
 
 const PAGE_SIZES = [10, 25, 50, 100];
@@ -32,14 +33,16 @@ const PAGE_SIZES = [10, 25, 50, 100];
 export function DataTable<T extends Record<string, any>>({
   columns,
   data,
-  total = 0,
+  total = data.length,
   page = 1,
   pageSize = 10,
   onPageChange,
   onPageSizeChange,
   onSearch,
+  onRowClick,
   maxHeight = "600px",
   isLoading = false,
+  showSerialNumber = false,
 }: DataTableProps<T>) {
   /* ---------------- DARK MODE ---------------- */
   const [isDark, setIsDark] = useState(false);
@@ -69,7 +72,7 @@ export function DataTable<T extends Record<string, any>>({
       header: isDark ? theme.brand.header.dark : theme.brand.header.light,
       primary: theme.brand.primary.DEFAULT,
     }),
-    [isDark],
+    [isDark]
   );
 
   /* ---------------- SEARCH ---------------- */
@@ -81,9 +84,9 @@ export function DataTable<T extends Record<string, any>>({
     }, 400);
 
     return () => clearTimeout(delay);
-  }, [search]);
+  }, [search, onSearch]);
 
-  /* ---------------- SORTING (CLIENT SIDE ONLY) ---------------- */
+  /* ---------------- SORTING ---------------- */
   const [sortKey, setSortKey] = useState<keyof T | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
@@ -101,25 +104,27 @@ export function DataTable<T extends Record<string, any>>({
     return [...data].sort((a, b) => {
       const aVal = a[sortKey];
       const bVal = b[sortKey];
+
       if (aVal == null) return 1;
       if (bVal == null) return -1;
+
       if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
       if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+
       return 0;
     });
   }, [data, sortKey, sortOrder]);
 
-  /* ---------------- PAGINATION (SERVER SIDE READY) ---------------- */
+  /* ---------------- PAGINATION ---------------- */
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const showingFrom = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const showingTo = Math.min(page * pageSize, total);
 
   return (
     <div className="w-full space-y-4">
-      {/* -------- TOP BAR -------- */}
+      {/* SEARCH BAR */}
       {onSearch && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          {/* Search */}
           <input
             type="text"
             placeholder="Search..."
@@ -133,7 +138,6 @@ export function DataTable<T extends Record<string, any>>({
             }}
           />
 
-          {/* Rows per page */}
           <div className="flex items-center gap-2 text-sm">
             <span style={{ color: colors.textMuted }}>Rows per page:</span>
             <select
@@ -156,17 +160,14 @@ export function DataTable<T extends Record<string, any>>({
         </div>
       )}
 
-      {/* -------- TABLE -------- */}
+      {/* TABLE */}
       <div
         className="relative overflow-hidden shadow-sm rounded-lg border"
         style={{ backgroundColor: colors.surface, borderColor: colors.border }}
       >
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-            <Loader
-              className="animate-spin"
-              style={{ color: colors.primary }}
-            />
+            <Loader className="animate-spin" style={{ color: colors.primary }} />
           </div>
         )}
 
@@ -174,6 +175,12 @@ export function DataTable<T extends Record<string, any>>({
           <table className="w-full text-sm border-separate border-spacing-0">
             <thead className="sticky top-0 z-40">
               <tr style={{ backgroundColor: colors.header }}>
+                {showSerialNumber && (
+                  <th className="px-6 py-4 text-left font-semibold border-b whitespace-nowrap">
+                    Sl. No.
+                  </th>
+                )}
+
                 {columns.map((col) => (
                   <th
                     key={String(col.key)}
@@ -205,7 +212,25 @@ export function DataTable<T extends Record<string, any>>({
 
             <tbody>
               {sortedData.map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:opacity-80 transition">
+                <tr
+                  key={rowIndex}
+                  onClick={() => onRowClick?.(row)}
+                  className={`hover:opacity-80 transition ${
+                    onRowClick ? "cursor-pointer" : ""
+                  }`}
+                >
+                  {showSerialNumber && (
+                    <td
+                      className="px-6 py-4 border-b whitespace-nowrap"
+                      style={{
+                        borderColor: colors.border,
+                        color: colors.textPrimary,
+                      }}
+                    >
+                      {(page - 1) * pageSize + rowIndex + 1}
+                    </td>
+                  )}
+
                   {columns.map((col) => (
                     <td
                       key={String(col.key)}
@@ -226,7 +251,7 @@ export function DataTable<T extends Record<string, any>>({
           </table>
         </div>
 
-        {/* -------- FOOTER -------- */}
+        {/* FOOTER */}
         <div
           className="flex items-center justify-between px-6 py-4 border-t text-sm"
           style={{
@@ -239,37 +264,40 @@ export function DataTable<T extends Record<string, any>>({
             Showing {showingFrom} to {showingTo} of {total}
           </div>
 
-          <div className="flex items-center gap-1">
-            <button
-              disabled={page === 1}
-              onClick={() => onPageChange?.(page - 1)}
-              className="px-3 py-1 disabled:opacity-30"
-            >
-              ← Previous
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+          {onPageChange && (
+            <div className="flex items-center gap-1">
               <button
-                key={p}
-                onClick={() => onPageChange?.(p)}
-                className="w-8 h-8 rounded-md text-sm"
-                style={{
-                  backgroundColor: p === page ? colors.primary : "transparent",
-                  color: p === page ? "#fff" : colors.textMuted,
-                }}
+                disabled={page === 1}
+                onClick={() => onPageChange(page - 1)}
+                className="px-3 py-1 disabled:opacity-30"
               >
-                {p}
+                ← Previous
               </button>
-            ))}
 
-            <button
-              disabled={page === totalPages}
-              onClick={() => onPageChange?.(page + 1)}
-              className="px-3 py-1 disabled:opacity-30"
-            >
-              Next →
-            </button>
-          </div>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => onPageChange(p)}
+                  className="w-8 h-8 rounded-md text-sm"
+                  style={{
+                    backgroundColor:
+                      p === page ? colors.primary : "transparent",
+                    color: p === page ? "#fff" : colors.textMuted,
+                  }}
+                >
+                  {p}
+                </button>
+              ))}
+
+              <button
+                disabled={page === totalPages}
+                onClick={() => onPageChange(page + 1)}
+                className="px-3 py-1 disabled:opacity-30"
+              >
+                Next →
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
