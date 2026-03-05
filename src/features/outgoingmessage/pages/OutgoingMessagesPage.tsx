@@ -45,8 +45,7 @@ const OutgoingMessagesPage = () => {
   const [showExportMenu, setShowExportMenu] = useState(false);
 
   const [search, setSearch] = useState("");
-  const [channel, setChannel] =
-    useState<(typeof CHANNELS)[number]>("all");
+  const [channel, setChannel] = useState<(typeof CHANNELS)[number]>("all");
   const [clientId, setClientId] = useState("");
 
   const [limit, setLimit] = useState(50);
@@ -89,7 +88,7 @@ const OutgoingMessagesPage = () => {
       if (clientId) params.append("client_id", clientId);
 
       const res = await axios.get(
-        `${API.OUTGOING_MESSAGES.LIST}?${params.toString()}`
+        `${API.OUTGOING_MESSAGES.LIST}?${params.toString()}`,
       );
 
       setMessages(res.data?.data || []);
@@ -117,13 +116,10 @@ const OutgoingMessagesPage = () => {
 
       const res = await axios.get(
         `${API.OUTGOING_MESSAGES.LIST}?${params.toString()}`,
-        { responseType: "blob" }
+        { responseType: "blob" },
       );
 
-      const mime =
-        exportType === "pdf"
-          ? "application/pdf"
-          : "text/csv";
+      const mime = exportType === "pdf" ? "application/pdf" : "text/csv";
 
       const blob = new Blob([res.data], { type: mime });
       const url = window.URL.createObjectURL(blob);
@@ -173,9 +169,7 @@ const OutgoingMessagesPage = () => {
         {/* 🔥 Attach ref here */}
         <div ref={exportRef} className="relative">
           <button
-            onClick={() =>
-              setShowExportMenu((prev) => !prev)
-            }
+            onClick={() => setShowExportMenu((prev) => !prev)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition hover:opacity-90"
             style={{ backgroundColor: colors.primary }}
           >
@@ -218,20 +212,14 @@ const OutgoingMessagesPage = () => {
         <div className="relative mt-4">
           {loading && (
             <div
-              className="absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm"
+              className="absolute inset-0 z-40 flex flex-col items-center justify-center backdrop-blur-sm"
               style={{
                 backgroundColor: isDark
                   ? "rgba(11, 18, 25, 0.7)"
                   : "rgba(248, 250, 252, 0.7)",
               }}
             >
-              <Loader />
-              <span
-                className="mt-4 text-[10px] font-black uppercase tracking-[0.2em]"
-                style={{ color: colors.primary }}
-              >
-                Refreshing Data
-              </span>
+              <Loader text="Loading..." size="md" />
             </div>
           )}
 

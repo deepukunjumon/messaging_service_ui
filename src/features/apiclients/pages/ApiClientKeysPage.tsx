@@ -15,7 +15,7 @@ const APIClientKeysPage = () => {
   const [keys, setKeys] = useState<APIClientKeys[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDark, setIsDark] = useState(
-    document.documentElement.classList.contains("dark")
+    document.documentElement.classList.contains("dark"),
   );
 
   const { showToast, ToastRenderer } = useToast();
@@ -23,7 +23,7 @@ const APIClientKeysPage = () => {
   /* ---------------- DARK MODE ---------------- */
   useEffect(() => {
     const observer = new MutationObserver(() =>
-      setIsDark(document.documentElement.classList.contains("dark"))
+      setIsDark(document.documentElement.classList.contains("dark")),
     );
     observer.observe(document.documentElement, {
       attributes: true,
@@ -49,9 +49,7 @@ const APIClientKeysPage = () => {
 
     setLoading(true);
     try {
-      const res = await axios.get(
-        `${API.API_CLIENTS.LIST}/${clientId}/keys`
-      );
+      const res = await axios.get(`${API.API_CLIENTS.LIST}/${clientId}/keys`);
 
       setKeys(res.data?.data || []);
     } catch (err) {
@@ -63,27 +61,21 @@ const APIClientKeysPage = () => {
   };
 
   /* ---------------- UPDATE STATUS ---------------- */
-  const handleStatusChange = async (
-    apiKeyId: string,
-    status: number
-  ) => {
+  const handleStatusChange = async (apiKeyId: string, status: number) => {
     if (!apiKeyId) return;
 
     try {
       // Optimistic update
       setKeys((prev) =>
-        prev.map((k) =>
-          k.id === apiKeyId ? { ...k, status } : k
-        )
+        prev.map((k) => (k.id === apiKeyId ? { ...k, status } : k)),
       );
 
       const res = await axios.put(
         API.API_KEYS.UPDATE_STATUS.replace("{apiKeyId}", apiKeyId),
-        { status }
+        { status },
       );
 
       showToast(res.data?.data?.message, "success");
-
     } catch (err) {
       console.error("Failed to update status", err);
 
@@ -111,10 +103,7 @@ const APIClientKeysPage = () => {
             >
               API Keys
             </h1>
-            <p
-              className="mt-1 text-sm"
-              style={{ color: colors.muted }}
-            >
+            <p className="mt-1 text-sm" style={{ color: colors.muted }}>
               Manage API keys for the client.
             </p>
           </div>
@@ -131,7 +120,7 @@ const APIClientKeysPage = () => {
           <div className="relative">
             {loading && (
               <div
-                className="absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm"
+                className="absolute inset-0 z-40 flex flex-col items-center justify-center backdrop-blur-sm"
                 style={{
                   backgroundColor: isDark
                     ? "rgba(11, 18, 25, 0.7)"
@@ -159,7 +148,6 @@ const APIClientKeysPage = () => {
       </div>
       <ToastRenderer />
     </>
-
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Loader, ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { theme } from "../styles/theme";
+import { Loader } from "./Loader";
 
 export interface Column<T> {
   key: keyof T;
@@ -13,7 +14,6 @@ export interface Column<T> {
 interface DataTableProps<T> {
   columns: Column<T>[];
   data: T[];
-
   total?: number;
   page?: number;
   pageSize?: number;
@@ -21,10 +21,8 @@ interface DataTableProps<T> {
   onPageSizeChange?: (size: number) => void;
   onSearch?: (value: string) => void;
   onRowClick?: (row: T) => void;
-
   maxHeight?: string;
   isLoading?: boolean;
-
   showSerialNumber?: boolean;
 }
 
@@ -72,17 +70,15 @@ export function DataTable<T extends Record<string, any>>({
       header: isDark ? theme.brand.header.dark : theme.brand.header.light,
       primary: theme.brand.primary.DEFAULT,
     }),
-    [isDark]
+    [isDark],
   );
 
   /* ---------------- SEARCH ---------------- */
   const [search, setSearch] = useState("");
-
   useEffect(() => {
     const delay = setTimeout(() => {
       onSearch?.(search);
     }, 400);
-
     return () => clearTimeout(delay);
   }, [search, onSearch]);
 
@@ -104,13 +100,10 @@ export function DataTable<T extends Record<string, any>>({
     return [...data].sort((a, b) => {
       const aVal = a[sortKey];
       const bVal = b[sortKey];
-
       if (aVal == null) return 1;
       if (bVal == null) return -1;
-
       if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
       if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
-
       return 0;
     });
   }, [data, sortKey, sortOrder]);
@@ -160,27 +153,23 @@ export function DataTable<T extends Record<string, any>>({
         </div>
       )}
 
-      {/* TABLE */}
+      {/* TABLE CONTAINER */}
       <div
-        className="relative overflow-hidden shadow-sm rounded-lg border"
+        className="relative shadow-sm rounded-lg border overflow-hidden"
         style={{ backgroundColor: colors.surface, borderColor: colors.border }}
       >
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-            <Loader className="animate-spin" style={{ color: colors.primary }} />
-          </div>
-        )}
-
         <div className="overflow-auto" style={{ maxHeight }}>
           <table className="w-full text-sm border-separate border-spacing-0">
             <thead className="sticky top-0 z-40">
               <tr style={{ backgroundColor: colors.header }}>
                 {showSerialNumber && (
-                  <th className="px-6 py-4 text-left font-semibold border-b whitespace-nowrap">
+                  <th
+                    className="px-6 py-4 text-left font-semibold border-b whitespace-nowrap"
+                    style={{ borderColor: colors.border }}
+                  >
                     Sl. No.
                   </th>
                 )}
-
                 {columns.map((col) => (
                   <th
                     key={String(col.key)}
@@ -192,9 +181,7 @@ export function DataTable<T extends Record<string, any>>({
                   >
                     <div
                       onClick={() => col.sortable && handleSort(col.key)}
-                      className={`flex items-center gap-1 ${
-                        col.sortable ? "cursor-pointer" : ""
-                      }`}
+                      className={`flex items-center gap-1 ${col.sortable ? "cursor-pointer" : ""}`}
                     >
                       {col.label}
                       {col.sortable &&
@@ -210,43 +197,66 @@ export function DataTable<T extends Record<string, any>>({
               </tr>
             </thead>
 
-            <tbody>
-              {sortedData.map((row, rowIndex) => (
-                <tr
-                  key={rowIndex}
-                  onClick={() => onRowClick?.(row)}
-                  className={`hover:opacity-80 transition ${
-                    onRowClick ? "cursor-pointer" : ""
-                  }`}
-                >
-                  {showSerialNumber && (
-                    <td
-                      className="px-6 py-4 border-b whitespace-nowrap"
-                      style={{
-                        borderColor: colors.border,
-                        color: colors.textPrimary,
-                      }}
-                    >
-                      {(page - 1) * pageSize + rowIndex + 1}
-                    </td>
-                  )}
-
-                  {columns.map((col) => (
-                    <td
-                      key={String(col.key)}
-                      className="px-6 py-4 border-b whitespace-nowrap"
-                      style={{
-                        borderColor: colors.border,
-                        color: colors.textPrimary,
-                      }}
-                    >
-                      {col.render
-                        ? col.render(row[col.key], row)
-                        : String(row[col.key] ?? "")}
-                    </td>
-                  ))}
+            {/* This relative wrapper ensures the loader stays inside the data area */}
+            <tbody className="relative min-h-[200px]">
+              {isLoading && (
+                <tr>
+                  <td
+                    colSpan={columns.length + (showSerialNumber ? 1 : 0)}
+                    className="p-0"
+                  >
+                    <div className="absolute inset-0 z-40 flex items-center justify-center bg-white/60 dark:bg-slate-900/60 backdrop-blur-[2px]">
+                      <Loader text="Loading..." variant="section" />
+                    </div>
+                  </td>
                 </tr>
-              ))}
+              )}
+
+              {sortedData.length > 0 ? (
+                sortedData.map((row, rowIndex) => (
+                  <tr
+                    key={rowIndex}
+                    onClick={() => onRowClick?.(row)}
+                    className={`hover:opacity-80 transition ${onRowClick ? "cursor-pointer" : ""}`}
+                  >
+                    {showSerialNumber && (
+                      <td
+                        className="px-6 py-4 border-b whitespace-nowrap"
+                        style={{
+                          borderColor: colors.border,
+                          color: colors.textPrimary,
+                        }}
+                      >
+                        {(page - 1) * pageSize + rowIndex + 1}
+                      </td>
+                    )}
+                    {columns.map((col) => (
+                      <td
+                        key={String(col.key)}
+                        className="px-6 py-4 border-b whitespace-nowrap"
+                        style={{
+                          borderColor: colors.border,
+                          color: colors.textPrimary,
+                        }}
+                      >
+                        {col.render
+                          ? col.render(row[col.key], row)
+                          : String(row[col.key] ?? "")}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={columns.length + (showSerialNumber ? 1 : 0)}
+                    className="px-6 py-20 text-center"
+                    style={{ color: colors.textMuted }}
+                  >
+                    {!isLoading && "No data available"}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -263,7 +273,6 @@ export function DataTable<T extends Record<string, any>>({
           <div>
             Showing {showingFrom} to {showingTo} of {total}
           </div>
-
           {onPageChange && (
             <div className="flex items-center gap-1">
               <button
@@ -273,7 +282,6 @@ export function DataTable<T extends Record<string, any>>({
               >
                 ← Previous
               </button>
-
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <button
                   key={p}
@@ -288,7 +296,6 @@ export function DataTable<T extends Record<string, any>>({
                   {p}
                 </button>
               ))}
-
               <button
                 disabled={page === totalPages}
                 onClick={() => onPageChange(page + 1)}

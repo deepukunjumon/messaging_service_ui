@@ -1,35 +1,56 @@
 import React from "react";
+import { theme } from "../styles/theme";
 
 interface LoaderProps {
   variant?: "full" | "section";
   text?: string;
+  size?: "sm" | "md" | "lg";
 }
 
 export const Loader: React.FC<LoaderProps> = ({
   variant = "section",
   text,
+  size = "md",
 }) => {
   const isFull = variant === "full";
+
+  // Mapping sizes to Tailwind classes
+  const sizeClasses = {
+    sm: "w-6 h-6 border-2",
+    md: "w-10 h-10 border-4",
+    lg: "w-16 h-16 border-[6px]",
+  };
 
   return (
     <div
       className={`
         flex flex-col items-center justify-center
-        ${isFull ? "fixed inset-0 z-[100] bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm" : "w-full h-full py-12"}
+        ${isFull ? "fixed inset-0 z-40 bg-white/90 dark:bg-slate-900/90" : "w-full min-h-[200px]"}
       `}
     >
-      <div className="relative flex items-center justify-center">
-        {/* Outer Ring */}
-        <div className="w-12 h-12 border-4 border-teal-500/20 rounded-full animate-spin border-t-teal-500" />
-
-        {/* Inner Pulsing Core */}
-        <div className="absolute w-4 h-4 bg-teal-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(20,184,166,0.5)]" />
-      </div>
+      {/* Standard Circular Spinner */}
+      <div
+        className={`
+          ${sizeClasses[size]}
+          rounded-full 
+          animate-spin 
+          border-slate-200 
+          dark:border-slate-400
+        `}
+        style={{
+          borderTopColor: theme.brand.primary.DEFAULT,
+        }}
+      />
 
       {text && (
-        <p className="mt-4 text-xs font-bold tracking-[0.2em] text-slate-500 dark:text-slate-400 animate-pulse">
+        <span
+          className="mt-4 text-sm font-medium dark:text-slate-400"
+          style={{
+            color: theme.brand.primary.DEFAULT,
+          }}
+        >
           {text}
-        </p>
+        </span>
       )}
     </div>
   );

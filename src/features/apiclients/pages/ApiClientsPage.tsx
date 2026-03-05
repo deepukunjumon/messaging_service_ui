@@ -66,7 +66,7 @@ const APIClientsPage = () => {
       if (search) params.append("q", search);
 
       const res = await axios.get(
-        `${API.API_CLIENTS.LIST}?${params.toString()}`
+        `${API.API_CLIENTS.LIST}?${params.toString()}`,
       );
 
       setClients(res.data?.data || []);
@@ -95,8 +95,8 @@ const APIClientsPage = () => {
             API Clients
           </h1>
           <p className="mt-1 text-sm" style={{ color: colors.muted }}>
-            Manage registered clients and their respective API authentication keys
-            within the secure vault.
+            Manage registered clients and their respective API authentication
+            keys within the secure vault.
           </p>
         </div>
 
@@ -149,20 +149,14 @@ const APIClientsPage = () => {
         <div className="relative">
           {loading && (
             <div
-              className="absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm"
+              className="absolute inset-0 z-40 flex flex-col items-center justify-center backdrop-blur-sm"
               style={{
                 backgroundColor: isDark
                   ? "rgba(11, 18, 25, 0.7)"
                   : "rgba(248, 250, 252, 0.7)",
               }}
             >
-              <Loader />
-              <span
-                className="mt-4 text-[10px] font-black uppercase tracking-[0.2em]"
-                style={{ color: colors.primary }}
-              >
-                Refreshing Data
-              </span>
+              <Loader text="Loading..." size="md" />
             </div>
           )}
 
@@ -171,9 +165,7 @@ const APIClientsPage = () => {
             data={clients}
             pageSize={limit}
             showSerialNumber
-            onRowClick={(row) =>
-              navigate(`/api-clients/${row.id}/keys`)
-            }
+            onRowClick={(row) => navigate(`/api-clients/${row.id}/keys`)}
           />
         </div>
       </div>

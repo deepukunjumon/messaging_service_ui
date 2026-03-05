@@ -19,28 +19,20 @@ const Sidebar = ({ open, variant }: SidebarProps) => {
 
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const surfaceBg = dark
-    ? theme.brand.surface.dark
-    : theme.brand.surface.light;
+  const surfaceBg = dark ? theme.brand.surface.dark : theme.brand.surface.light;
 
-  const borderColor = dark
-    ? theme.brand.border.dark
-    : theme.brand.border.light;
+  const borderColor = dark ? theme.brand.border.dark : theme.brand.border.light;
 
-  const textColor = dark
-    ? theme.brand.text.dark
-    : theme.brand.text.primary;
+  const textColor = dark ? theme.brand.text.dark : theme.brand.text.primary;
 
   const mutedText = theme.brand.text.muted;
 
   const activeBg = theme.brand.secondary;
-  const activeText = dark
-    ? theme.brand.text.dark
-    : theme.brand.primary.dark;
+  const activeText = dark ? theme.brand.text.dark : theme.brand.primary.dark;
 
   useEffect(() => {
     const activeGroup = sidebarConfig.find((item) =>
-      item.children?.some((child) => child.path === location.pathname)
+      item.children?.some((child) => child.path === location.pathname),
     );
     setExpanded(activeGroup?.label ?? null);
   }, [location.pathname]);
@@ -52,7 +44,7 @@ const Sidebar = ({ open, variant }: SidebarProps) => {
   return (
     <aside
       className={[
-        "h-full min-h-screen shrink-0 border-r transition-all duration-300 ease-in-out",
+        "h-full min-h-screen shrink-0 border-r transition-all duration-300 ease-in-out z-50",
         isDesktop ? (open ? "w-64" : "w-16") : "w-72",
       ].join(" ")}
       style={{
@@ -134,17 +126,11 @@ const Sidebar = ({ open, variant }: SidebarProps) => {
                             ].join(" ")
                           }
                           style={({ isActive }) => ({
-                            backgroundColor: isActive
-                              ? activeBg
-                              : undefined,
-                            color: isActive
-                              ? activeText
-                              : textColor,
+                            backgroundColor: isActive ? activeBg : undefined,
+                            color: isActive ? activeText : textColor,
                           })}
                         >
-                          {ChildIcon && (
-                            <ChildIcon className="h-4 w-4" />
-                          )}
+                          {ChildIcon && <ChildIcon className="h-4 w-4" />}
                           {child.label}
                         </NavLink>
                       );
