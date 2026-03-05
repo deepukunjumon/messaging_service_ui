@@ -1,10 +1,13 @@
 const primary = {
-  DEFAULT: "#1597BB",
-  light: "#1597BB",
-  dark: "#1597BB",
+  DEFAULT: "#026151",
+  light: "#026151",
+  dark: "#0796e3",
 };
 
-const secondary = `${primary.DEFAULT}2F`;
+const secondary = {
+  light: `${primary.light}2F`,
+  dark: `${primary.dark}2F`,
+};
 
 const background = {
   light: "#F8FAFC",
@@ -13,7 +16,7 @@ const background = {
 
 const surface = {
   light: "#FFFFFF",
-  dark: "#000000",
+  dark: "#030d1c",
 };
 
 const text = {
@@ -24,18 +27,17 @@ const text = {
 
 const border = {
   light: "#E2E8F0",
-  dark: "#1E293B",
+  dark: "#07152c",
 };
 
 const button = {
   success: "#439121",
-  delete: "#ad1c17"
+  delete: "#ad1c17",
 };
 
 const toggle = {
   turned_on: "#06923E",
-  turned_off: "#d1d5db"
-
+  turned_off: "#d1d5db",
 };
 
 const toast = {
@@ -43,7 +45,7 @@ const toast = {
   error: "#c71423",
   warning: "#e6510b",
   info: "#1792ad",
-  default: primary.DEFAULT
+  default: primary.DEFAULT,
 };
 
 export const theme = {

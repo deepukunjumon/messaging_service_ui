@@ -19,7 +19,7 @@ const SendSmsPage = () => {
   }, []);
 
   const colors = {
-    primary: theme.brand.primary.DEFAULT,
+    primary: isDark ? theme.brand.primary.dark : theme.brand.primary.light,
     primaryDark: theme.brand.primary.dark,
     text: isDark ? theme.brand.text.dark : theme.brand.text.primary,
     muted: theme.brand.text.muted,
@@ -97,12 +97,12 @@ const SendSmsPage = () => {
       <div>
         <h1
           className="text-2xl font-bold tracking-tight"
-          style={{ color: isDark ? colors.text : colors.primary }}
+          style={{ color: colors.primary }}
         >
           Send SMS
         </h1>
         <p className="mt-1 text-sm" style={{ color: colors.muted }}>
-          Send single or bulk SMS using your API key and DLT template.
+          Send single or bulk SMS.
         </p>
       </div>
 
@@ -189,6 +189,29 @@ const SendSmsPage = () => {
               />
             </div>
 
+            {/* DLT Template */}
+            <div>
+              <label className={LabelClass} style={{ color: colors.text }}>
+                DLT Template ID <span className="text-rose-500">*</span>
+              </label>
+              <input
+                value={dltTemplateId}
+                onChange={(e) => setDltTemplateId(e.target.value)}
+                className={`${InputClass} mt-2`}
+                style={
+                  {
+                    ...{
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                      color: colors.text,
+                    },
+                    "--tw-ring-color": `${colors.primary}66`,
+                  } as any
+                }
+                placeholder="Enter DLT template id"
+              />
+            </div>
+
             {/* Recipients */}
             <div>
               <div className="flex items-center justify-between">
@@ -244,29 +267,6 @@ const SendSmsPage = () => {
                   } as any
                 }
                 placeholder="Type your message…"
-              />
-            </div>
-
-            {/* DLT Template */}
-            <div>
-              <label className={LabelClass} style={{ color: colors.text }}>
-                DLT Template ID <span className="text-rose-500">*</span>
-              </label>
-              <input
-                value={dltTemplateId}
-                onChange={(e) => setDltTemplateId(e.target.value)}
-                className={`${InputClass} mt-2`}
-                style={
-                  {
-                    ...{
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                    "--tw-ring-color": `${colors.primary}66`,
-                  } as any
-                }
-                placeholder="Enter DLT template id"
               />
             </div>
           </div>

@@ -7,7 +7,7 @@ import type { OutgoingMessage } from "../types/outgoingMessages.types";
 import { outgoingMessageColumns } from "../config/outgoingMessages.columns";
 import { Loader } from "../../../components/Loader";
 import { theme } from "../../../styles/theme";
-import { ChevronDown, FileSpreadsheet } from "lucide-react";
+import { ChevronDown, Download, FileSpreadsheet } from "lucide-react";
 
 const CHANNELS = ["all", "sms", "email", "whatsapp"] as const;
 
@@ -29,7 +29,7 @@ const OutgoingMessagesPage = () => {
   }, []);
 
   const colors = {
-    primary: theme.brand.primary.DEFAULT,
+    primary: isDark ? theme.brand.primary.dark : theme.brand.primary.light,
     text: isDark ? theme.brand.text.dark : theme.brand.text.primary,
     muted: theme.brand.text.muted,
     border: isDark ? theme.brand.border.dark : theme.brand.border.light,
@@ -54,7 +54,6 @@ const OutgoingMessagesPage = () => {
 
   const exportRef = useRef<HTMLDivElement | null>(null);
 
-  /* ---------------- CLOSE DROPDOWN ON OUTSIDE CLICK ---------------- */
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -74,7 +73,6 @@ const OutgoingMessagesPage = () => {
     };
   }, [showExportMenu]);
 
-  /* ---------------- FETCH ---------------- */
   const fetchMessages = async () => {
     setLoading(true);
     try {
@@ -102,7 +100,7 @@ const OutgoingMessagesPage = () => {
     }
   };
 
-  /* ---------------- EXPORT ---------------- */
+  // Export handler
   const handleExport = async (exportType: "csv" | "pdf") => {
     try {
       const params = new URLSearchParams({
@@ -141,7 +139,6 @@ const OutgoingMessagesPage = () => {
     }
   };
 
-  /* ---------------- EFFECT ---------------- */
   useEffect(() => {
     const delay = setTimeout(() => {
       fetchMessages();
@@ -166,13 +163,12 @@ const OutgoingMessagesPage = () => {
           </p>
         </div>
 
-        {/* 🔥 Attach ref here */}
         <div ref={exportRef} className="relative">
           <button
             onClick={() => setShowExportMenu((prev) => !prev)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition hover:opacity-90"
-            style={{ backgroundColor: colors.primary }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition hover:opacity-90 bg-blue-500 hover:bg-blue-600"
           >
+            <Download className="w-4 h-4" />
             <span>Export</span>
             <ChevronDown className="w-4 h-4" />
           </button>
@@ -201,15 +197,41 @@ const OutgoingMessagesPage = () => {
         </div>
       </div>
 
-      {/* Main Card */}
+      {/* Table Card */}
       <div
         className="rounded-2xl border shadow-sm overflow-hidden"
-        style={{
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-        }}
+        style={{ backgroundColor: colors.surface, borderColor: colors.border }}
       >
-        <div className="relative mt-4">
+        {/* Search */}
+        <div
+          className="flex flex-col gap-3 border-b px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+          style={{ borderColor: colors.border }}
+        >
+          <h2 className="text-m font-bold" style={{ color: colors.text }}>
+            Logs
+          </h2>
+
+          <div className="w-full sm:w-72">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search..."
+              className="w-full rounded-lg border px-4 py-2 text-sm transition-all outline-none focus:ring-2"
+              style={
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  color: colors.text,
+                  "--tw-ring-color": `${colors.primary}66`,
+                } as any
+              }
+            />
+          </div>
+        </div>
+
+        {/* Table Body */}
+        <div className="relative">
           {loading && (
             <div
               className="absolute inset-0 z-40 flex flex-col items-center justify-center backdrop-blur-sm"
@@ -228,6 +250,7 @@ const OutgoingMessagesPage = () => {
             data={messages}
             total={total}
             pageSize={limit}
+            showSerialNumber
           />
         </div>
       </div>

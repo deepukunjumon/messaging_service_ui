@@ -28,7 +28,7 @@ const APIClientsPage = () => {
   }, []);
 
   const colors = {
-    primary: theme.brand.primary.DEFAULT,
+    primary: isDark ? theme.brand.primary.dark : theme.brand.primary.light,
     text: isDark ? theme.brand.text.dark : theme.brand.text.primary,
     muted: theme.brand.text.muted,
     border: isDark ? theme.brand.border.dark : theme.brand.border.light,
@@ -90,7 +90,7 @@ const APIClientsPage = () => {
         <div>
           <h1
             className="text-2xl font-bold tracking-tight"
-            style={{ color: isDark ? colors.text : colors.primary }}
+            style={{ color: colors.primary }}
           >
             API Clients
           </h1>
@@ -103,8 +103,7 @@ const APIClientsPage = () => {
         <div className="flex items-start sm:items-center">
           <button
             onClick={() => setOpenCreate(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
-            style={{ backgroundColor: colors.primary }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition hover:opacity-90 hover:scale-[1.02] active:scale-[0.97] bg-green-600 hover:bg-green-700"
           >
             <Plus className="w-4 h-4" />
             <span>Create</span>

@@ -127,13 +127,7 @@ const APIClientKeysPage = () => {
                     : "rgba(248, 250, 252, 0.7)",
                 }}
               >
-                <Loader />
-                <span
-                  className="mt-4 text-[10px] font-black uppercase tracking-[0.2em]"
-                  style={{ color: colors.primary }}
-                >
-                  Loading Keys
-                </span>
+                <Loader text={"Loading API keys..."} size="md" />
               </div>
             )}
 

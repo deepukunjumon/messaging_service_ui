@@ -20,7 +20,7 @@ const SendMailPage = () => {
   }, []);
 
   const colors = {
-    primary: theme.brand.primary.DEFAULT,
+    primary: isDark ? theme.brand.primary.dark : theme.brand.primary.light,
     primaryDark: theme.brand.primary.dark,
     text: isDark ? theme.brand.text.dark : theme.brand.text.primary,
     muted: theme.brand.text.muted,
@@ -137,7 +137,7 @@ const SendMailPage = () => {
       <div>
         <h1
           className="text-2xl font-bold tracking-tight"
-          style={{ color: isDark ? colors.text : colors.primary }}
+          style={{ color: colors.primary }}
         >
           Send Email
         </h1>
