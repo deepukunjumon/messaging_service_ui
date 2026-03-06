@@ -4,12 +4,6 @@ import { Chip } from "../../../components/Chip";
 
 export const outgoingMessageColumns: Column<OutgoingMessage>[] = [
   {
-    key: "id",
-    label: "ID",
-    sortable: false,
-    pinned: "left",
-  },
-  {
     key: "api_client",
     label: "Client",
   },
@@ -20,7 +14,6 @@ export const outgoingMessageColumns: Column<OutgoingMessage>[] = [
       <Chip 
         label={String(value).charAt(0).toUpperCase() + String(value).slice(1)}
         color="primary"
-        variant="soft"
         size="small"
       />
     ),
@@ -28,6 +21,13 @@ export const outgoingMessageColumns: Column<OutgoingMessage>[] = [
   {
     key: "recipient",
     label: "Recipient",
+  },
+  {
+    key: "metadata",
+    label: "Details",
+    render: (value) => (
+      <span className="font-mono">{String(value)}</span>
+    ),
   },
   {
     key: "status",
@@ -51,7 +51,6 @@ export const outgoingMessageColumns: Column<OutgoingMessage>[] = [
         <Chip
           label={status}
           color={color}
-          variant="soft"
           size="small"
         />
       );

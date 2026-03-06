@@ -1,4 +1,3 @@
-import { PencilIcon } from "lucide-react";
 import type { Column } from "../../../components/DataTable";
 import type { APIClientKeys } from "../type/apiClientKeys.types.tsx";
 import { Chip } from "../../../components/Chip.tsx";
@@ -23,7 +22,6 @@ export const apiClientKeysColumns = (
         <Chip
             label={value === 1 ? "Active" : (value === -1 ? "Revoked" : "Inactive") }
             color={value === 1 ? "success" :(value === -1 ? "danger" : "warning") }
-            variant="soft"
             size="small"
         />
         ),

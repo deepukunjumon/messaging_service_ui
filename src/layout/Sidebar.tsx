@@ -20,7 +20,6 @@ const Sidebar = ({ open, variant }: SidebarProps) => {
   );
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  // observe theme changes
   useEffect(() => {
     const observer = new MutationObserver(() =>
       setIsDark(document.documentElement.classList.contains("dark")),
@@ -32,7 +31,6 @@ const Sidebar = ({ open, variant }: SidebarProps) => {
     return () => observer.disconnect();
   }, []);
 
-  // colors based on theme
   const surfaceBg = isDark
     ? theme.brand.surface.dark
     : theme.brand.surface.light;
@@ -42,11 +40,10 @@ const Sidebar = ({ open, variant }: SidebarProps) => {
   const textColor = isDark ? theme.brand.text.dark : theme.brand.text.primary;
   const mutedText = isDark ? theme.brand.text.muted : theme.brand.text.muted;
 
-  // active/hover colors using secondary (lighter shades of primary)
   const activeBg = isDark
     ? theme.brand.secondary.dark
     : theme.brand.secondary.light;
-  const activeText = isDark ? theme.brand.text.light : theme.brand.text.dark;
+  const activeText = isDark ? theme.brand.text.dark : theme.brand.text.dark;
 
   useEffect(() => {
     const activeGroup = sidebarConfig.find((item) =>

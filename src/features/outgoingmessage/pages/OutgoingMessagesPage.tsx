@@ -202,16 +202,46 @@ const OutgoingMessagesPage = () => {
         className="rounded-2xl border shadow-sm overflow-hidden"
         style={{ backgroundColor: colors.surface, borderColor: colors.border }}
       >
-        {/* Search */}
         <div
-          className="flex flex-col gap-3 border-b px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-3 border-b px-5 py-3 sm:flex-row sm:items-center sm:justify-between"
           style={{ borderColor: colors.border }}
         >
-          <h2 className="text-m font-bold" style={{ color: colors.text }}>
-            Logs
-          </h2>
+          {/* Tabs */}
+          <div className="w-full flex justify-center sm:justify-start">
+            <div
+              className="flex items-center gap-1 p-1 rounded-xl overflow-x-auto scrollbar-hide max-w-full"
+              style={{
+                backgroundColor: isDark
+                  ? "rgba(255,255,255,0.05)"
+                  : "rgba(0,0,0,0.04)",
+              }}
+            >
+              {CHANNELS.map((ch) => {
+                const isActive = channel === ch;
 
-          <div className="w-full sm:w-72">
+                return (
+                  <button
+                    key={ch}
+                    onClick={() => {
+                      setChannel(ch);
+                      setOffset(0);
+                    }}
+                    className="px-4 py-1.5 rounded-lg text-sm font-medium capitalize whitespace-nowrap animate-slide-in duration-200"
+                    style={{
+                      backgroundColor: isActive ? colors.primary : "transparent",
+                      color: isActive ? "#fff" : colors.muted,
+                      boxShadow: isActive ? "0 2px 6px rgba(0,0,0,0.15)" : "none",
+                    }}
+                  >
+                    {ch}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="w-full sm:w-64">
             <input
               type="text"
               value={search}

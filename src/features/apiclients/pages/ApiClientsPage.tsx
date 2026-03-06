@@ -8,7 +8,7 @@ import type { APIClient } from "../type/apiClients.types";
 import { Loader } from "../../../components/Loader";
 import { theme } from "../../../styles/theme";
 import { CreateClientModal } from "../components/CreateClientModal";
-import { Plus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const APIClientsPage = () => {
@@ -105,7 +105,7 @@ const APIClientsPage = () => {
             onClick={() => setOpenCreate(true)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition hover:opacity-90 hover:scale-[1.02] active:scale-[0.97] bg-green-600 hover:bg-green-700"
           >
-            <Plus className="w-4 h-4" />
+            <UserPlus className="w-4 h-4" />
             <span>Create</span>
           </button>
         </div>
@@ -130,7 +130,7 @@ const APIClientsPage = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by client name..."
+              placeholder="Search..."
               className="w-full rounded-lg border px-4 py-2 text-sm transition-all outline-none focus:ring-2"
               style={
                 {
