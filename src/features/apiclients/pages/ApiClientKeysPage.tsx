@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../../services/axios";
 import API from "../../../config/api.config";
 import { DataTable } from "../../../components/DataTable";
@@ -8,7 +8,7 @@ import { theme } from "../../../styles/theme";
 import type { APIClientKeys } from "../type/apiClientKeys.types";
 import { apiClientKeysColumns } from "../config/apiClientKeys.columns";
 import { useToast } from "../../../hooks/useToast";
-import { KeyRound } from "lucide-react";
+import { ChevronRight, KeyRound } from "lucide-react";
 import { Modal } from "../../../components/Modal";
 
 const APIClientKeysPage = () => {
@@ -25,6 +25,8 @@ const APIClientKeysPage = () => {
   const [showGenerateConfirm, setShowGenerateConfirm] = useState(false);
   const { showToast, ToastRenderer } = useToast();
 
+  const navigate = useNavigate();
+
   /* ---------------- DARK MODE ---------------- */
   useEffect(() => {
     const observer = new MutationObserver(() =>
@@ -38,7 +40,7 @@ const APIClientKeysPage = () => {
   }, []);
 
   const colors = {
-    primary: theme.brand.primary.DEFAULT,
+    primary: isDark ? theme.brand.primary.dark : theme.brand.primary.light,
     text: isDark ? theme.brand.text.dark : theme.brand.text.primary,
     muted: theme.brand.text.muted,
     border: isDark ? theme.brand.border.dark : theme.brand.border.light,
@@ -48,7 +50,7 @@ const APIClientKeysPage = () => {
       : theme.brand.background.light,
   };
 
-  const clientName = '';
+  const clientName = "";
 
   // Fetch Keys
   const fetchKeys = async () => {
@@ -65,7 +67,7 @@ const APIClientKeysPage = () => {
       if (search) params.append("q", search);
 
       const res = await axios.get(
-        `${API.API_CLIENTS.LIST}/${clientId}/keys?${params.toString()}`
+        `${API.API_CLIENTS.LIST}/${clientId}/keys?${params.toString()}`,
       );
 
       setKeys(res.data?.data || []);
@@ -77,18 +79,18 @@ const APIClientKeysPage = () => {
     }
   };
 
-// Generate Key
+  // Generate Key
   const generateKey = async () => {
     if (!clientId) return;
 
     setLoading(true);
     try {
-      const url = API.API_KEYS.GENERATE.replace('{clientId}', clientId);
-      
+      const url = API.API_KEYS.GENERATE.replace("{clientId}", clientId);
+
       const res = await axios.post(url);
       showToast(res.data?.data?.message, "success");
 
-      await fetchKeys(); 
+      await fetchKeys();
     } catch (err) {
       console.error("Failed to generate key:", err);
     } finally {
@@ -122,7 +124,7 @@ const APIClientKeysPage = () => {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => fetchKeys(), 300);
-     return () => clearTimeout(delayDebounceFn);
+    return () => clearTimeout(delayDebounceFn);
   }, [clientId, search, limit, offset]);
 
   /* ---------------- COLUMNS ---------------- */
@@ -131,12 +133,34 @@ const APIClientKeysPage = () => {
   return (
     <>
       <div className="space-y-6">
+        {/* Breadcrumbs */}
+        <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 flex flex-wrap gap-1">
+          <span
+            className="cursor-pointer hover:underline"
+            onClick={() => navigate("/")}
+          >
+            Home
+          </span>
+          <span>
+            <ChevronRight size={14} style={{ marginTop: "5px" }} />
+          </span>
+          <span
+            className="cursor-pointer hover:underline"
+            onClick={() => navigate("/api-clients")}
+          >
+            API Clients
+          </span>
+          <span>
+            <ChevronRight size={14} style={{ marginTop: "5px" }} />
+          </span>
+          <span>API Keys</span>
+        </div>
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1
               className="text-2xl font-bold tracking-tight"
-              style={{ color: colors.text }}
+              style={{ color: colors.primary }}
             >
               API Keys
             </h1>

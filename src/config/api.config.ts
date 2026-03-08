@@ -1,13 +1,14 @@
 const API = {
-
   API_CLIENTS: {
     CREATE: "/api-client",
+    UPDATE: "/api-client/{clientId}",
+    UPDATE_STATUS: "/api-client/{clientId}/status",
     LIST: "/api-clients",
   },
 
   API_KEYS: {
     GENERATE: "/api-keys/generate/{clientId}",
-    UPDATE_STATUS: "/api-keys/{apiKeyId}/status"
+    UPDATE_STATUS: "/api-keys/{apiKeyId}/status",
   },
 
   SMS: {
@@ -15,12 +16,12 @@ const API = {
   },
 
   MAIL: {
-    SEND: "/email/send"
+    SEND: "/email/send",
   },
 
   OUTGOING_MESSAGES: {
-    LIST: "/outgoing-messages"
-  }
+    LIST: "/outgoing-messages",
+  },
 };
 
 export default API;

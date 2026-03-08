@@ -64,6 +64,9 @@ export function DataTable<T extends Record<string, any>>({
         ? theme.brand.background.dark
         : theme.brand.background.light,
       surface: isDark ? theme.brand.surface.dark : theme.brand.surface.light,
+      secondary: isDark
+        ? theme.brand.secondary.dark
+        : theme.brand.secondary.light,
       textPrimary: isDark ? theme.brand.text.dark : theme.brand.text.primary,
       textMuted: theme.brand.text.muted,
       border: isDark ? theme.brand.border.dark : theme.brand.border.light,
@@ -217,7 +220,14 @@ export function DataTable<T extends Record<string, any>>({
                   <tr
                     key={rowIndex}
                     onClick={() => onRowClick?.(row)}
-                    className={`hover:opacity-80 transition ${onRowClick ? "cursor-pointer" : ""}`}
+                    className={`transition ${onRowClick ? "cursor-pointer" : ""}`}
+                    style={{ backgroundColor: undefined }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = colors.secondary)
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "")
+                    }
                   >
                     {showSerialNumber && (
                       <td

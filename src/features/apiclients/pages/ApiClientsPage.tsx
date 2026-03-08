@@ -8,8 +8,10 @@ import type { APIClient } from "../type/apiClients.types";
 import { Loader } from "../../../components/Loader";
 import { theme } from "../../../styles/theme";
 import { CreateClientModal } from "../components/CreateClientModal";
-import { UserPlus } from "lucide-react";
+import { EditClientModal } from "../components/EditClientModal";
+import { ArrowBigRight, ChevronRight, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Modal } from "../../../components/Modal"; // Assuming you have this component
 
 const APIClientsPage = () => {
   const [isDark, setIsDark] = useState(
@@ -40,20 +42,18 @@ const APIClientsPage = () => {
 
   const navigate = useNavigate();
 
-  const handleEdit = (row: APIClient) => {
-    console.log("Edit:", row);
-  };
-
-  const handleDelete = (row: APIClient) => {
-    console.log("Delete:", row);
-  };
-
   const [clients, setClients] = useState<APIClient[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
   const [openCreate, setOpenCreate] = useState(false);
+
+  const [editingClient, setEditingClient] = useState<APIClient | null>(null);
+  const [openEdit, setOpenEdit] = useState(false);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletingClient, setDeletingClient] = useState<APIClient | null>(null);
 
   const fetchClients = async () => {
     setLoading(true);
@@ -68,13 +68,41 @@ const APIClientsPage = () => {
       const res = await axios.get(
         `${API.API_CLIENTS.LIST}?${params.toString()}`,
       );
-
       setClients(res.data?.data || []);
     } catch (e) {
       console.error("Fetch failed:", e);
       setClients([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEdit = (row: APIClient) => {
+    setEditingClient(row);
+    setOpenEdit(true);
+  };
+
+  const handleDelete = (row: APIClient) => {
+    setDeletingClient(row);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingClient?.id) return;
+
+    try {
+      await axios.put(
+        API.API_CLIENTS.UPDATE_STATUS.replace("{clientId}", deletingClient.id),
+        { status: -1 },
+      );
+      setClients((prev) => prev.filter((c) => c.id !== deletingClient.id));
+      fetchClients();
+    } catch (err) {
+      console.error("Failed to delete client", err);
+      fetchClients();
+    } finally {
+      setShowDeleteConfirm(false);
+      setDeletingClient(null);
     }
   };
 
@@ -85,6 +113,20 @@ const APIClientsPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumbs */}
+      <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 flex flex-wrap gap-1">
+        <span
+          className="cursor-pointer hover:underline"
+          onClick={() => navigate("/")}
+        >
+          Home
+        </span>
+        <span>
+          <ChevronRight size={14} style={{ marginTop: "5px" }} />
+        </span>
+        <span>API Clients</span>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -96,13 +138,16 @@ const APIClientsPage = () => {
           </h1>
           <p className="mt-1 text-sm" style={{ color: colors.muted }}>
             Manage registered clients and their respective API authentication
-            keys within the secure vault.
+            keys.
           </p>
         </div>
 
         <div className="flex items-start sm:items-center">
           <button
-            onClick={() => setOpenCreate(true)}
+            onClick={() => {
+              setEditingClient(null);
+              setOpenCreate(true);
+            }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition hover:opacity-90 hover:scale-[1.02] active:scale-[0.97] bg-green-600 hover:bg-green-700"
           >
             <UserPlus className="w-4 h-4" />
@@ -174,6 +219,51 @@ const APIClientsPage = () => {
         onClose={() => setOpenCreate(false)}
         onSuccess={fetchClients}
       />
+
+      <EditClientModal
+        open={openEdit}
+        client={editingClient}
+        onClose={() => {
+          setOpenEdit(false);
+          setEditingClient(null);
+        }}
+        onSuccess={fetchClients}
+      />
+
+      {/* Delete Confirmation */}
+      <Modal
+        open={showDeleteConfirm}
+        title="Delete Client"
+        onClose={() => setShowDeleteConfirm(false)}
+        showCloseButton={false}
+      >
+        <div className="space-y-4">
+          <p className="text-sm">
+            Are you sure you want to delete this client? This action will
+            deactivate the client and its API access.
+          </p>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              className="px-4 py-2 text-sm rounded-md border"
+              style={{
+                borderColor: colors.border,
+                color: colors.text,
+              }}
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-2 text-sm rounded-md text-white bg-red-600 hover:bg-red-700"
+            >
+              Delete Client
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
