@@ -1,4 +1,9 @@
 const API = {
+
+  DASHBOARD: {
+    SERVICE_STATS: "/dashboard/service-stats",
+  },
+
   API_CLIENTS: {
     CREATE: "/api-client",
     UPDATE: "/api-client/{clientId}",
