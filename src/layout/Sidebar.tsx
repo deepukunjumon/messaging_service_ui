@@ -43,7 +43,7 @@ const Sidebar = ({ open, variant }: SidebarProps) => {
   const activeBg = isDark
     ? theme.brand.secondary.dark
     : theme.brand.secondary.light;
-  const activeText = isDark ? theme.brand.text.dark : theme.brand.text.dark;
+  const activeText = isDark ? theme.brand.text.dark : theme.brand.text.primary;
 
   useEffect(() => {
     const activeGroup = sidebarConfig.find((item) =>

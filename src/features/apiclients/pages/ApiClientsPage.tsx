@@ -9,9 +9,9 @@ import { Loader } from "../../../components/Loader";
 import { theme } from "../../../styles/theme";
 import { CreateClientModal } from "../components/CreateClientModal";
 import { EditClientModal } from "../components/EditClientModal";
-import { ArrowBigRight, ChevronRight, UserPlus } from "lucide-react";
+import { ChevronRight, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Modal } from "../../../components/Modal"; // Assuming you have this component
+import { Modal } from "../../../components/Modal";
 
 const APIClientsPage = () => {
   const [isDark, setIsDark] = useState(

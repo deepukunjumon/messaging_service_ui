@@ -30,7 +30,6 @@ export const apiClientColumns = (
             ? "danger"
             : "warning"
         }
-        variant="soft"
         size="small"
       />
     ),
@@ -49,16 +48,16 @@ export const apiClientColumns = (
         className="flex items-center gap-2"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Edit */}
-        <button
-          onClick={() => onEdit(row)}
-          className="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition"
-          title="Edit Client"
-        >
-          <PencilIcon className="w-4 h-4 text-blue-600" />
-        </button>
+        {row.status === 1 && (
+          <button
+            onClick={() => onEdit(row)}
+            className="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition"
+            title="Edit Client"
+          >
+            <PencilIcon className="w-4 h-4 text-blue-600" />
+          </button>
+        )}
 
-        {/* Delete */}
         {row.status !== -1 && (
           <button
             onClick={() => onDelete(row)}
