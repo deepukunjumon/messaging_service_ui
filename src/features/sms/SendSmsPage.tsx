@@ -1,12 +1,16 @@
 import { useMemo, useState, useEffect } from "react";
+import axios from "../../services/axios";
+import API from "../../config/api.config";
 import { sendSms } from "../../services/sms.service";
 import { theme } from "../../styles/theme";
+import DropDownComponent from "../../components/DropDownComponent";
 
 const SendSmsPage = () => {
   // Theme state detection
   const [isDark, setIsDark] = useState(
     document.documentElement.classList.contains("dark"),
   );
+
   useEffect(() => {
     const observer = new MutationObserver(() =>
       setIsDark(document.documentElement.classList.contains("dark")),
@@ -36,11 +40,16 @@ const SendSmsPage = () => {
 
   const LabelClass = "text-sm font-medium";
 
+  const [clients, setClients] = useState<any[]>([]);
+  const [clientId, setClientId] = useState("");
+  const [apiKeys, setApiKeys] = useState<any[]>([]);
+
   const [apiKey, setApiKey] = useState("");
   const [phoneNumbers, setPhoneNumbers] = useState("");
   const [content, setContent] = useState("");
   const [dltTemplateId, setDltTemplateId] = useState("");
   const [loading, setLoading] = useState(false);
+
   const [status, setStatus] = useState<{
     type: "success" | "error";
     text: string;
@@ -67,10 +76,53 @@ const SendSmsPage = () => {
     );
   }, [apiKey, recipients.length, content, dltTemplateId]);
 
+  const fetchClients = async (q = "") => {
+    try {
+      const params = new URLSearchParams();
+
+      if (q) params.append("q", q);
+
+      const res = await axios.get(
+        `${API.API_CLIENTS.MINIMAL_LIST}?${params.toString()}`,
+      );
+
+      setClients(res.data?.data || []);
+    } catch (e) {
+      console.error("Fetch clients failed:", e);
+      setClients([]);
+    }
+  };
+
+  const fetchClientApiKeys = async (id: string) => {
+    if (!id) return;
+
+    try {
+      const res = await axios.get(
+        `${API.API_KEYS.CLIENT_ACTIVE_KEYS.replace("{clientId}", id)}`,
+      );
+      setApiKeys(res.data?.data || []);
+    } catch (e) {
+      console.error("Fetch api keys failed:", e);
+      setApiKeys([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
+
+  const handleClientChange = (id: string) => {
+    setClientId(id);
+    setApiKey("");
+    fetchClientApiKeys(id);
+  };
+
   const handleSend = async () => {
     if (!isFormValid || loading) return;
+
     setLoading(true);
     setStatus(null);
+
     try {
       await sendSms(
         {
@@ -80,6 +132,7 @@ const SendSmsPage = () => {
         },
         apiKey.trim(),
       );
+
       setStatus({ type: "success", text: "SMS sent successfully." });
     } catch (e: any) {
       setStatus({
@@ -120,12 +173,12 @@ const SendSmsPage = () => {
         </div>
       )}
 
-      {/* Single Card */}
+      {/* Card */}
       <div
         className="rounded-2xl border shadow-sm"
         style={{ backgroundColor: colors.surface, borderColor: colors.border }}
       >
-        {/* Card Header */}
+        {/* Header */}
         <div
           className="flex flex-col gap-3 border-b px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
           style={{ borderColor: colors.border }}
@@ -142,7 +195,6 @@ const SendSmsPage = () => {
             </p>
           </div>
 
-          {/* Desktop Send Button */}
           <button
             onClick={handleSend}
             disabled={!isFormValid || loading}
@@ -161,31 +213,38 @@ const SendSmsPage = () => {
           </button>
         </div>
 
-        {/* Card Body */}
+        {/* Body */}
         <div className="grid grid-cols-1 gap-6 p-5 lg:grid-cols-3">
-          {/* Left: Form */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Client */}
+            <div>
+              <DropDownComponent
+                label="Client"
+                value={clientId}
+                isSearchable
+                options={clients.map((c) => ({
+                  label: c.name,
+                  value: c.id,
+                }))}
+                placeholder="Select Client"
+                onSearch={(q) => fetchClients(q)}
+                onChange={(v) => handleClientChange(v)}
+              />
+            </div>
+
             {/* API Key */}
             <div>
-              <label className={LabelClass} style={{ color: colors.text }}>
-                API Key <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="password"
+              <DropDownComponent
+                label="API Key"
                 value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                className={`${InputClass} mt-2`}
-                style={
-                  {
-                    ...{
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                    "--tw-ring-color": `${colors.primary}66`,
-                  } as any
-                }
-                placeholder="Enter API Key"
+                disabled={!clientId}
+                isSearchable={false}
+                options={apiKeys.map((k) => ({
+                  label: `${k.api_key}`,
+                  value: k.api_key,
+                }))}
+                placeholder="Select API Key"
+                onChange={(v) => setApiKey(v)}
               />
             </div>
 
@@ -194,20 +253,16 @@ const SendSmsPage = () => {
               <label className={LabelClass} style={{ color: colors.text }}>
                 DLT Template ID <span className="text-rose-500">*</span>
               </label>
+
               <input
                 value={dltTemplateId}
                 onChange={(e) => setDltTemplateId(e.target.value)}
                 className={`${InputClass} mt-2`}
-                style={
-                  {
-                    ...{
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                    "--tw-ring-color": `${colors.primary}66`,
-                  } as any
-                }
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  color: colors.text,
+                }}
                 placeholder="Enter DLT template id"
               />
             </div>
@@ -222,21 +277,17 @@ const SendSmsPage = () => {
                   {recipients.length} recipient(s)
                 </span>
               </div>
+
               <textarea
                 rows={3}
                 value={phoneNumbers}
                 onChange={(e) => setPhoneNumbers(e.target.value)}
                 className={`${InputClass} mt-2 resize-none`}
-                style={
-                  {
-                    ...{
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                    "--tw-ring-color": `${colors.primary}66`,
-                  } as any
-                }
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  color: colors.text,
+                }}
                 placeholder="Comma separated mobile numbers"
               />
             </div>
@@ -247,31 +298,28 @@ const SendSmsPage = () => {
                 <label className={LabelClass} style={{ color: colors.text }}>
                   Message <span className="text-rose-500">*</span>
                 </label>
+
                 <span className="text-xs" style={{ color: colors.muted }}>
                   {content.length} chars • {segments} segment(s)
                 </span>
               </div>
+
               <textarea
                 rows={6}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className={`${InputClass} mt-2 resize-none`}
-                style={
-                  {
-                    ...{
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                    "--tw-ring-color": `${colors.primary}66`,
-                  } as any
-                }
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  color: colors.text,
+                }}
                 placeholder="Type your message…"
               />
             </div>
           </div>
 
-          {/* Right: Summary */}
+          {/* Summary */}
           <div className="space-y-4">
             <div
               className="rounded-xl border p-4"
@@ -286,6 +334,7 @@ const SendSmsPage = () => {
               >
                 Summary
               </h3>
+
               <div className="mt-4 grid grid-cols-3 gap-3">
                 {[
                   { label: "Recipients", value: recipients.length },
@@ -309,6 +358,7 @@ const SendSmsPage = () => {
                   </div>
                 ))}
               </div>
+
               <div
                 className="mt-4 rounded-lg border p-3 text-xs"
                 style={{
@@ -324,7 +374,7 @@ const SendSmsPage = () => {
           </div>
         </div>
 
-        {/* Mobile Send Button */}
+        {/* Mobile Send */}
         <div
           className="sm:hidden border-t p-4"
           style={{ borderColor: colors.border }}
